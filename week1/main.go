@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+    "./Graph"
+    "fmt"
+)
 
 func main() {
-    fmt.Printf("Hell on earth")
+    g := Graph.ReadTextfile("_6ff856efca965e8774eb18584754fd65_g1.txt")
+
+    fmt.Println(g)
 }
