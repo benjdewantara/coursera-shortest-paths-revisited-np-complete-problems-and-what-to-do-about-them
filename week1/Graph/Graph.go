@@ -1,48 +1,47 @@
 package Graph
 
 import (
-    "io/ioutil"
-    "strconv"
-    "strings"
+	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 type Graph struct {
-    NumVertices int
-    Edges       []Edge
+	NumVertices int
+	Adj         [][][2]int
 }
 
 func ReadTextfile(filepath string) Graph {
-    g := Graph{}
+	g := Graph{}
 
-    contentBytes, _ := ioutil.ReadFile(filepath)
-    for lineIndx, intStr := range strings.Split(string(contentBytes), "\n") {
-        if intStr == "" {
-            continue
-        }
+	contentBytes, _ := ioutil.ReadFile(filepath)
+	for lineIndx, intStr := range strings.Split(string(contentBytes), "\n") {
+		if intStr == "" {
+			continue
+		}
 
-        splitStr := strings.Split(intStr, " ")
+		splitStr := strings.Split(intStr, " ")
 
-        if lineIndx == 0 {
-            numVertices, _ := strconv.Atoi(splitStr[0])
-            numEdges, _ := strconv.Atoi(splitStr[1])
+		if lineIndx == 0 {
+			numVertices, _ := strconv.Atoi(splitStr[0])
+			//numEdges, _ := strconv.Atoi(splitStr[1])
 
-            g.NumVertices = numVertices
-            g.Edges = make([]Edge, 0, numEdges)
+			g.NumVertices = numVertices
+			g.Adj = make([][][2]int, numVertices)
 
-            continue
-        }
+			continue
+		}
 
-        tail, _ := strconv.Atoi(splitStr[0])
-        head, _ := strconv.Atoi(splitStr[1])
-        length, _ := strconv.Atoi(splitStr[2])
-        e := Edge{
-            Tail:   tail,
-            Head:   head,
-            Weight: length,
-        }
+		tail, _ := strconv.Atoi(splitStr[0])
+		head, _ := strconv.Atoi(splitStr[1])
+		length, _ := strconv.Atoi(splitStr[2])
 
-        g.Edges = append(g.Edges, e)
-    }
+		if g.Adj[tail-1] == nil {
+			g.Adj[tail-1] = make([][2]int, 0)
+		}
 
-    return g
+		g.Adj[tail-1] = append(g.Adj[tail-1], [2]int{head, length})
+	}
+
+	return g
 }
