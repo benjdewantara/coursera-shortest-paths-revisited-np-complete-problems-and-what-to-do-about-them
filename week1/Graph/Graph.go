@@ -7,12 +7,39 @@ import (
 )
 
 type Graph struct {
-	NumVertices int
-	Adj         [][][2]int
+	NumVertices              int
+	Adj                      [][][2]int
+	EdgesGoingIntoNodeCached map[int][]Edge
+}
+
+func (g *Graph) EdgesGoingIntoNode(nodeDest int) []Edge {
+	edgesGoingIntoNode, exists := g.EdgesGoingIntoNodeCached[nodeDest]
+	if !exists {
+		edgesGoingIntoNode = make([]Edge, 0)
+	} else {
+		return g.EdgesGoingIntoNodeCached[nodeDest]
+	}
+
+	for tailIdx := 0; tailIdx < g.NumVertices; tailIdx++ {
+		tailNode := tailIdx + 1
+		for headIdx := 0; headIdx < len(g.Adj[tailIdx]); headIdx++ {
+			headNode, weight := g.Adj[tailIdx][headIdx][0], g.Adj[tailIdx][headIdx][1]
+			if headNode == nodeDest {
+				edgesGoingIntoNode =
+					append(
+						edgesGoingIntoNode,
+						Edge{tailNode, headNode, weight})
+			}
+		}
+	}
+
+	g.EdgesGoingIntoNodeCached[nodeDest] = edgesGoingIntoNode
+	return g.EdgesGoingIntoNodeCached[nodeDest]
 }
 
 func ReadTextfile(filepath string) Graph {
 	g := Graph{}
+	g.EdgesGoingIntoNodeCached = make(map[int][]Edge)
 
 	contentBytes, _ := ioutil.ReadFile(filepath)
 	for lineIndx, intStr := range strings.Split(string(contentBytes), "\n") {

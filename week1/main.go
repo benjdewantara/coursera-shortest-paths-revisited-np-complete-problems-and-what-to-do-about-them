@@ -1,14 +1,15 @@
 package main
 
 import (
-    "./Graph"
-    "./ShortestPath"
-    "fmt"
+	"./Graph"
+	"./ShortestPath"
+	"fmt"
 )
 
 func main() {
-    g := Graph.ReadTextfile("_6ff856efca965e8774eb18584754fd65_g1.txt")
-    bellmanFord := ShortestPath.InitBellmanFord(g, 1)
+	g := Graph.ReadTextfile("_6ff856efca965e8774eb18584754fd65_g1.txt")
+	bellmanFord := ShortestPath.InitBellmanFord(g, 1)
+	bellmanFord.Evaluate()
 
-    fmt.Println(bellmanFord.SourceVertex)
+	fmt.Println(bellmanFord.SourceVertex)
 }
