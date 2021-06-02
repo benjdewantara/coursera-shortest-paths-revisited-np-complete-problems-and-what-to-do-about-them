@@ -50,5 +50,14 @@ func InitJohnson(g Graph.Graph) Johnson {
 		}
 	}
 
+	// get rid of the extra node
+	j.GPrime.Adj = j.GPrime.Adj[0 : len(j.GPrime.Adj)-1]
+	j.GPrime.NumVertices--
+
+	if !j.BellmanFord.NegativeCycleExists {
+		d := InitDijkstraWithRoot(j.GPrime, 1)
+		d.Evaluate()
+	}
+
 	return j
 }
