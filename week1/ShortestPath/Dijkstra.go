@@ -22,6 +22,9 @@ func (d *Dijkstra) Evaluate() {
 			continue
 		}
 
+		d.SuperNodes[distFromRoot.NodeDestination] = true
+		d.ShortestLengthToNodes[distFromRoot.NodeDestination-1] = distFromRoot.Distance
+
 		heads := d.G.Adj[distFromRoot.NodeDestination-1]
 		for _, h := range heads {
 			nodeDest := h[0]
@@ -47,9 +50,6 @@ func InitDijkstraWithRoot(g Graph.Graph, root int) Dijkstra {
 	}
 	d.ShortestLengthToNodes[root-1] = float64(0)
 	d.AdjacentNodes = append(d.AdjacentNodes, DistanceFromRoot{d.RootNode, 0})
-	//d.AdjacentNodes[root-1].Distance = 0
-	//d.AdjacentNodes = append(d.AdjacentNodes[0:root-1], d.AdjacentNodes[root:]...)
-	//d.SuperNodes[root] = true
 
 	heap.Init(&d)
 	return d
@@ -60,7 +60,7 @@ func (d *Dijkstra) Len() int {
 }
 
 func (d *Dijkstra) Less(i, j int) bool {
-	return d.AdjacentNodes[i].Distance < d.AdjacentNodes[i].Distance
+	return d.AdjacentNodes[i].Distance < d.AdjacentNodes[j].Distance
 }
 
 func (d *Dijkstra) Swap(i, j int) {
