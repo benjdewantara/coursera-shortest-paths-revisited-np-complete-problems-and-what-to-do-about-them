@@ -1,7 +1,7 @@
 package Graph
 
 type Edge struct {
-    Tail   int
-    Head   int
-    Weight int
+	Tail   int
+	Head   int
+	Weight int
 }
