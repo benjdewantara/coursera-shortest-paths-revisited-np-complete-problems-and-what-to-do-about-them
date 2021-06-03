@@ -14,6 +14,24 @@ type Johnson struct {
 	ShortestPair map[string]int
 }
 
+func (j *Johnson) PrintShortestPairIfAny() {
+	if j.BellmanFord.NegativeCycleExists {
+		fmt.Println("Negative cycle exists for this graph")
+		return
+	}
+
+	minVal := 0
+	minKey := ""
+	for key, value := range j.ShortestPair {
+		if minKey == "" || value < minVal {
+			minKey = key
+			minVal = value
+		}
+	}
+
+	fmt.Printf("Graph has shortest path for pair %s with length %d\n", minKey, minVal)
+}
+
 func InitJohnson(g Graph.Graph) Johnson {
 	gPrime := g
 	gPrime.Adj = append(gPrime.Adj, make([][2]int, g.NumVertices))
