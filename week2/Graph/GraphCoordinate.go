@@ -7,6 +7,7 @@ import (
 )
 
 type GraphCoordinate struct {
+	Vertices         []int
 	VertexCoordinate [][2]float64
 }
 
@@ -24,6 +25,12 @@ func ReadTextfile(filepath string) GraphCoordinate {
 		if lineIndx == 0 {
 			numVertices, _ := strconv.Atoi(splitStr[0])
 			g.VertexCoordinate = make([][2]float64, numVertices)
+
+			g.Vertices = make([]int, numVertices)
+			for vidx := 0; vidx < len(g.Vertices); vidx++ {
+				g.Vertices[vidx] = vidx + 1
+			}
+
 			continue
 		}
 
