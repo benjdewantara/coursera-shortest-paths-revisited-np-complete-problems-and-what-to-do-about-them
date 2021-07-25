@@ -45,7 +45,8 @@ func (g *GraphCoordinate) EvaluateTsp() {
 		vertexSecondToLast := g.Vertices[i]
 		key := SubsetWVertexDestToString(finalSubset, vertexSecondToLast)
 
-		d := g.A[key] +
+		val, _ := GetValueFromTextfile(key)
+		d := val +
 			g.DistanceBetween(vertexSecondToLast, 1)
 		if minDist == -1 || d < minDist {
 			minDist = d
@@ -54,7 +55,7 @@ func (g *GraphCoordinate) EvaluateTsp() {
 
 	g.MinDist = minDist
 
-	fmt.Println(fmt.Sprintf("EvaluateTsp: finalSubset = %s", finalSubset))
+	fmt.Println(finalSubset)
 	fmt.Println(fmt.Sprintf("EvaluateTsp: MinDist = %f", g.MinDist))
 	fmt.Println("EvaluateTsp: End of function")
 }
@@ -82,12 +83,12 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		}
 		WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
-		return g.A[key]
+		return dist
 	} else if len(subset) == 2 {
 		dist = g.DistanceBetween(subset[0], subset[1])
 		WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
-		return g.A[key]
+		return dist
 	}
 
 	minDist := -1.0
@@ -117,7 +118,7 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 
 	WriteValueToTextfile(key, minDist)
 	//g.A[key] = minDist
-	return g.A[key]
+	return minDist
 }
 
 func SubsetWVertexDestToString(subset []int, vertexDest int) string {
@@ -134,8 +135,12 @@ func IndicesToString(indices []int) string {
 }
 
 func GetValueFromTextfile(key string) (float64, bool) {
+	directoryFullpath := "/media/e/Benjamin Antara/Documents/Online Courses/Coursera/coursera-textfile-data2"
+	directoryFullpath = strings.TrimRight(directoryFullpath, "/")
+
 	filenamePostfix := strings.Split(key, ">")[0]
-	filename := fmt.Sprintf("values%s.txt", filenamePostfix)
+	filename := fmt.Sprintf("%s/values%s.txt", directoryFullpath, filenamePostfix)
+
 	file, err := os.Open(filename)
 	if err != nil {
 		file, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
@@ -170,8 +175,11 @@ func GetValueFromTextfile(key string) (float64, bool) {
 }
 
 func WriteValueToTextfile(key string, value float64) {
+	directoryFullpath := "/media/e/Benjamin Antara/Documents/Online Courses/Coursera/coursera-textfile-data2"
+	directoryFullpath = strings.TrimRight(directoryFullpath, "/")
+
 	filenamePostfix := strings.Split(key, ">")[0]
-	filename := fmt.Sprintf("values%s.txt", filenamePostfix)
+	filename := fmt.Sprintf("%s/values%s.txt", directoryFullpath, filenamePostfix)
 
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0755)
 	if err != nil {
