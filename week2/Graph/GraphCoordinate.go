@@ -1,9 +1,12 @@
 package Graph
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -66,7 +69,8 @@ func (g *GraphCoordinate) DistanceBetween(vertexA int, vertexB int) float64 {
 
 func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64 {
 	key := SubsetWVertexDestToString(subset, vertexJInSubset)
-	dist, exists := g.A[key]
+	dist, exists := GetValueFromTextfile(key)
+	//dist, exists := g.A[key]
 	if exists {
 		return dist
 	}
@@ -76,11 +80,13 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		if subset[0] == 1 && vertexJInSubset == 1 {
 			dist = 0
 		}
-		g.A[key] = dist
+		WriteValueToTextfile(key, dist)
+		//g.A[key] = dist
 		return g.A[key]
 	} else if len(subset) == 2 {
 		dist = g.DistanceBetween(subset[0], subset[1])
-		g.A[key] = dist
+		WriteValueToTextfile(key, dist)
+		//g.A[key] = dist
 		return g.A[key]
 	}
 
@@ -109,7 +115,8 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		}
 	}
 
-	g.A[key] = minDist
+	WriteValueToTextfile(key, minDist)
+	//g.A[key] = minDist
 	return g.A[key]
 }
 
@@ -124,6 +131,55 @@ func IndicesToString(indices []int) string {
 	}
 
 	return s
+}
+
+func GetValueFromTextfile(key string) (float64, bool) {
+	filenamePostfix := strings.Split(key, ">")[0]
+	filename := fmt.Sprintf("values%s.txt", filenamePostfix)
+	file, err := os.Open(filename)
+	if err != nil {
+		file, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	}
+	defer file.Close()
+
+	num := 0.0
+	exists := false
+	scanner := bufio.NewScanner(file)
+	// optionally, resize scanner's capacity for lines over 64K, see next example
+
+	for scanner.Scan() {
+		s := scanner.Text()
+
+		if s == "" {
+			continue
+		}
+
+		splitStr := strings.Split(s, " ")
+		if splitStr[0] == key {
+			num, _ = strconv.ParseFloat(splitStr[1], 64)
+			exists = true
+			break
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return num, exists
+}
+
+func WriteValueToTextfile(key string, value float64) {
+	filenamePostfix := strings.Split(key, ">")[0]
+	filename := fmt.Sprintf("values%s.txt", filenamePostfix)
+
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0755)
+	if err != nil {
+		file, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	}
+	defer file.Close()
+
+	file.WriteString(fmt.Sprintf("%s %f\n", key, value))
 }
 
 func ReadTextfile(filepath string) GraphCoordinate {
