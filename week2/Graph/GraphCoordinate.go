@@ -15,6 +15,7 @@ type GraphCoordinate struct {
 	Vertices         []int
 	VertexCoordinate [][2]float64
 	A                map[string]float64
+	ABitIndexed      []float64
 	MinDist          float64
 }
 
@@ -43,10 +44,11 @@ func (g *GraphCoordinate) EvaluateTsp() {
 	minDist := -1.0
 	for i := 1; i < len(g.Vertices); i++ {
 		vertexSecondToLast := g.Vertices[i]
-		key := SubsetWVertexDestToString(finalSubset, vertexSecondToLast)
+		//key := SubsetWVertexDestToString(finalSubset, vertexSecondToLast)
+		//val, _ := GetValueFromTextfile(key)
 
-		val, _ := GetValueFromTextfile(key)
-		d := val +
+		bitIndex := BitIndex(finalSubset)
+		d := g.ABitIndexed[bitIndex] +
 			g.DistanceBetween(vertexSecondToLast, 1)
 		if minDist == -1 || d < minDist {
 			minDist = d
@@ -69,11 +71,17 @@ func (g *GraphCoordinate) DistanceBetween(vertexA int, vertexB int) float64 {
 }
 
 func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64 {
-	key := SubsetWVertexDestToString(subset, vertexJInSubset)
-	dist, exists := GetValueFromTextfile(key)
+	//key := SubsetWVertexDestToString(subset, vertexJInSubset)
+	//dist, exists := GetValueFromTextfile(key)
 	//dist, exists := g.A[key]
-	if exists {
-		return dist
+	//if exists {
+	//	return dist
+	//}
+
+	bitIndex := BitIndex(subset)
+	dist := g.ABitIndexed[bitIndex]
+	if dist != 0 {
+		return g.ABitIndexed[bitIndex]
 	}
 
 	if len(subset) == 1 {
@@ -81,13 +89,20 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		if subset[0] == 1 && vertexJInSubset == 1 {
 			dist = 0
 		}
-		WriteValueToTextfile(key, dist)
+		g.ABitIndexed[bitIndex] = dist
+
+		//WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
+
 		return dist
 	} else if len(subset) == 2 {
 		dist = g.DistanceBetween(subset[0], subset[1])
-		WriteValueToTextfile(key, dist)
+
+		g.ABitIndexed[bitIndex] = dist
+
+		//WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
+
 		return dist
 	}
 
@@ -116,13 +131,24 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		}
 	}
 
-	WriteValueToTextfile(key, minDist)
+	g.ABitIndexed[bitIndex] = minDist
+
+	//WriteValueToTextfile(key, minDist)
 	//g.A[key] = minDist
+
 	return minDist
 }
 
 func SubsetWVertexDestToString(subset []int, vertexDest int) string {
 	return fmt.Sprintf("%s>%d", IndicesToString(subset), vertexDest)
+}
+
+func BitIndex(indices []int) int {
+	summed := 0
+	for _, vertex := range indices {
+		summed += 1 << (vertex - 1)
+	}
+	return summed
 }
 
 func IndicesToString(indices []int) string {
@@ -135,6 +161,8 @@ func IndicesToString(indices []int) string {
 }
 
 func GetValueFromTextfile(key string) (float64, bool) {
+	return -1.0, false
+
 	directoryFullpath := "/media/e/Benjamin Antara/Documents/Online Courses/Coursera/coursera-textfile-data2"
 	directoryFullpath = strings.TrimRight(directoryFullpath, "/")
 
@@ -175,6 +203,8 @@ func GetValueFromTextfile(key string) (float64, bool) {
 }
 
 func WriteValueToTextfile(key string, value float64) {
+	return
+
 	directoryFullpath := "/media/e/Benjamin Antara/Documents/Online Courses/Coursera/coursera-textfile-data2"
 	directoryFullpath = strings.TrimRight(directoryFullpath, "/")
 
@@ -192,7 +222,7 @@ func WriteValueToTextfile(key string, value float64) {
 
 func ReadTextfile(filepath string) GraphCoordinate {
 	g := GraphCoordinate{}
-	g.A = make(map[string]float64)
+	//g.A = make(map[string]float64)
 
 	contentBytes, _ := ioutil.ReadFile(filepath)
 	for lineIndx, intStr := range strings.Split(string(contentBytes), "\n") {
@@ -210,6 +240,9 @@ func ReadTextfile(filepath string) GraphCoordinate {
 			for vidx := 0; vidx < len(g.Vertices); vidx++ {
 				g.Vertices[vidx] = vidx + 1
 			}
+
+			powerSetSize := math.Pow(2, float64(numVertices))
+			g.ABitIndexed = make([]float64, int(powerSetSize))
 
 			continue
 		}
