@@ -15,7 +15,7 @@ type GraphCoordinate struct {
 	Vertices         []int
 	VertexCoordinate [][2]float64
 	A                map[string]float64
-	ABitIndexed      []float64
+	ABitIndexed      [][25]float64
 	MinDist          float64
 }
 
@@ -48,7 +48,7 @@ func (g *GraphCoordinate) EvaluateTsp() {
 		//val, _ := GetValueFromTextfile(key)
 
 		bitIndex := BitIndex(finalSubset)
-		d := g.ABitIndexed[bitIndex] +
+		d := g.ABitIndexed[bitIndex][vertexSecondToLast-1] +
 			g.DistanceBetween(vertexSecondToLast, 1)
 		if minDist == -1 || d < minDist {
 			minDist = d
@@ -79,9 +79,9 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 	//}
 
 	bitIndex := BitIndex(subset)
-	dist := g.ABitIndexed[bitIndex]
+	dist := g.ABitIndexed[bitIndex][vertexJInSubset-1]
 	if dist != 0 {
-		return g.ABitIndexed[bitIndex]
+		return g.ABitIndexed[bitIndex][vertexJInSubset-1]
 	}
 
 	if len(subset) == 1 {
@@ -89,7 +89,7 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		if subset[0] == 1 && vertexJInSubset == 1 {
 			dist = 0
 		}
-		g.ABitIndexed[bitIndex] = dist
+		g.ABitIndexed[bitIndex][vertexJInSubset-1] = dist
 
 		//WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
@@ -98,7 +98,7 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 	} else if len(subset) == 2 {
 		dist = g.DistanceBetween(subset[0], subset[1])
 
-		g.ABitIndexed[bitIndex] = dist
+		g.ABitIndexed[bitIndex][vertexJInSubset-1] = dist
 
 		//WriteValueToTextfile(key, dist)
 		//g.A[key] = dist
@@ -131,7 +131,7 @@ func (g *GraphCoordinate) putDistance(subset []int, vertexJInSubset int) float64
 		}
 	}
 
-	g.ABitIndexed[bitIndex] = minDist
+	g.ABitIndexed[bitIndex][vertexJInSubset-1] = minDist
 
 	//WriteValueToTextfile(key, minDist)
 	//g.A[key] = minDist
@@ -242,7 +242,7 @@ func ReadTextfile(filepath string) GraphCoordinate {
 			}
 
 			powerSetSize := math.Pow(2, float64(numVertices))
-			g.ABitIndexed = make([]float64, int(powerSetSize))
+			g.ABitIndexed = make([][25]float64, int(powerSetSize))
 
 			continue
 		}
