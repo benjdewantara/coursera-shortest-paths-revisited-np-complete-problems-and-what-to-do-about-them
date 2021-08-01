@@ -10,11 +10,15 @@ import (
 type GraphCoordinate struct {
 	Vertices         []int
 	VertexCoordinate [][2]float64
-	MinDist          float64
+
+	Visited   []int
+	Unvisited []int
+
+	MinDist float64
 }
 
-func (g *GraphCoordinate) Length() int {
-	return len(g.VertexCoordinate)
+func (g *GraphCoordinate) Len() int {
+	return len(g.Unvisited)
 }
 
 func (g *GraphCoordinate) EvaluateTsp() {
@@ -67,6 +71,10 @@ func ReadTextfile(filepath string) GraphCoordinate {
 		g.VertexCoordinate[vertexIndx][0] = x
 		g.VertexCoordinate[vertexIndx][1] = y
 	}
+
+	g.Unvisited = append([]int{}, g.Vertices...)
+	g.Visited = append([]int{}, g.Unvisited[0])
+	g.Unvisited = g.Unvisited[1:]
 
 	return g
 }
