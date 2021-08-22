@@ -11,12 +11,20 @@ type Graph struct {
 	Adj         [][]int
 }
 
-func (g *Graph) getVertexIndex(vertex int) int {
+func (g *Graph) getIndexOfVertex(vertex int) int {
 	if vertex < 0 {
 		return (-vertex + g.NumVertices) - 1
 	}
 
 	return vertex - 1
+}
+
+func (g *Graph) getVertexFromIndex(indx int) int {
+	if indx < g.NumVertices {
+		return indx + 1
+	}
+
+	return -(indx - g.NumVertices + 1)
 }
 
 func ReadTextfile(filepath string, isReversed bool) Graph {
@@ -44,7 +52,7 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 			vertexFrom, vertexTo = vertexTo, vertexFrom
 		}
 
-		vertexFromIdx := g.getVertexIndex(vertexFrom)
+		vertexFromIdx := g.getIndexOfVertex(vertexFrom)
 
 		if g.Adj[vertexFromIdx] == nil {
 			g.Adj[vertexFromIdx] = make([]int, 1)
