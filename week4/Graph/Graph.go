@@ -54,9 +54,9 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 
 		vertexFromIdx := g.getIndexOfVertex(vertexFrom)
 
-		if g.Adj[vertexFromIdx] == nil {
-			g.Adj[vertexFromIdx] = make([]int, 1)
-		}
+		//if g.Adj[vertexFromIdx] == nil {
+		//	g.Adj[vertexFromIdx] = make([]int, 1)
+		//}
 
 		g.Adj[vertexFromIdx] = append(g.Adj[vertexFromIdx], vertexTo)
 	}

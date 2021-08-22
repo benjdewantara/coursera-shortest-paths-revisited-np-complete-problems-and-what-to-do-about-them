@@ -6,6 +6,11 @@ import (
 )
 
 func main() {
+	//g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_sample2sat0.txt", false)
+	//g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_sample2sat1.txt", false)
+
 	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt", true)
+	og := Graph.InitFromGraph(&g)
+	og.DFSLoop()
 	fmt.Println(len(g.Adj))
 }
