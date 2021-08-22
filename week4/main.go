@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/benjdewantara/coursera-shortest-paths-revisited-np-complete-problems-and-what-to-do-about-them/week4/Graph"
+)
 
 func main() {
-	fmt.Println("Hell on earth")
+	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt")
+	fmt.Println(len(g.Adj))
 }
