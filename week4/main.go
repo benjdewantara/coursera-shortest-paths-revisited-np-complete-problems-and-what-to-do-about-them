@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt")
+	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt", true)
 	fmt.Println(len(g.Adj))
 }

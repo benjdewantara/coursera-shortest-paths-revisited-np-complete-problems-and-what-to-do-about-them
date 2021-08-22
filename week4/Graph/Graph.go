@@ -11,7 +11,15 @@ type Graph struct {
 	Adj         [][]int
 }
 
-func ReadTextfile(filepath string) Graph {
+func (g *Graph) getVertexIndex(vertex int) int {
+	if vertex < 0 {
+		return (-vertex + g.NumVertices) - 1
+	}
+
+	return vertex - 1
+}
+
+func ReadTextfile(filepath string, isReversed bool) Graph {
 	g := Graph{}
 
 	contentBytes, _ := ioutil.ReadFile(filepath)
@@ -32,15 +40,11 @@ func ReadTextfile(filepath string) Graph {
 		vertexFrom, _ := strconv.Atoi(splitStr[0])
 		vertexTo, _ := strconv.Atoi(splitStr[1])
 
-		vertexFromIdx := vertexFrom - 1
-		if vertexFromIdx < 0 {
-			vertexFromIdx = (vertexFrom + g.NumVertices) - 1
+		if isReversed {
+			vertexFrom, vertexTo = vertexTo, vertexFrom
 		}
 
-		vertexToIdx := vertexTo - 1
-		if vertexToIdx < 0 {
-			vertexToIdx = (vertexTo + g.NumVertices) - 1
-		}
+		vertexFromIdx := g.getVertexIndex(vertexFrom)
 
 		if g.Adj[vertexFromIdx] == nil {
 			g.Adj[vertexFromIdx] = make([]int, 1)
