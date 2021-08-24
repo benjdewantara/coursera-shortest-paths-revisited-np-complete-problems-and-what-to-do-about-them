@@ -11,6 +11,9 @@ func main() {
 
 	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt", true)
 	og := Graph.InitFromGraph(&g)
-	og.DFSLoop()
+	og.DFSLoopFirst()
+
+	og.SortVertexByFinishingTime()
+
 	fmt.Println(len(g.Adj))
 }
