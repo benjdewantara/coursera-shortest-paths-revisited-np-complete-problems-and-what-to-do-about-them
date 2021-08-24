@@ -9,13 +9,29 @@ func main() {
 	//g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_sample2sat0.txt", false)
 	//g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_sample2sat1.txt", false)
 
-	g := Graph.ReadTextfile("_02c1945398be467219866ee1c3294d2d_2sat1.txt", true)
-	og := Graph.InitFromGraph(&g)
-	og.DFSLoopFirst()
+	textfiles := []string{
+		"_02c1945398be467219866ee1c3294d2d_2sat1.txt",
+		"_02c1945398be467219866ee1c3294d2d_2sat2.txt",
+		"_02c1945398be467219866ee1c3294d2d_2sat3.txt",
+		"_02c1945398be467219866ee1c3294d2d_2sat4.txt",
+		"_02c1945398be467219866ee1c3294d2d_2sat5.txt",
+		"_02c1945398be467219866ee1c3294d2d_2sat6.txt"}
 
-	og.SortVertexByFinishingTime()
+	for psIndx, pst := range textfiles {
+		g := Graph.ReadTextfile(pst, true)
+		og := Graph.InitFromGraph(&g)
+		og.DFSLoopFirst()
 
-	og.DFSLoopSecond()
+		og.SortVertexByFinishingTime()
 
-	fmt.Println(len(g.Adj))
+		og.DFSLoopSecond()
+
+		if len(og.SccLeaders) == g.NumVertices {
+			fmt.Println(fmt.Sprintf("Problem %s does not have a strongly-connected component", psIndx))
+		} else if len(og.SccLeaders) < g.NumVertices {
+			fmt.Println(fmt.Sprintf("Problem %s may have strongly-connected components", psIndx))
+		}
+		//fmt.Println(len(g.Adj))
+		break
+	}
 }

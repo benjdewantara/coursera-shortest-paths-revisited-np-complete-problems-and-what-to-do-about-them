@@ -10,7 +10,7 @@ func (v *VertexLabelSortedByFinishingTime) Len() int {
 }
 
 func (v *VertexLabelSortedByFinishingTime) Less(i, j int) bool {
-	return v.FinishingTime[i] < v.FinishingTime[j]
+	return v.FinishingTime[i] > v.FinishingTime[j]
 }
 
 func (v *VertexLabelSortedByFinishingTime) Swap(i, j int) {
