@@ -54,6 +54,7 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 			vertexFrom, vertexTo = vertexTo, vertexFrom
 		}
 
+		vertexFrom = -vertexFrom
 		vertexFromIdx := g.getIndexOfVertex(vertexFrom)
 
 		g.Adj[vertexFromIdx] = append(g.Adj[vertexFromIdx], vertexTo)
@@ -67,5 +68,5 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 		g.VertexLabels[g.NumVertices+i] = vertex
 	}
 
-return g
+	return g
 }

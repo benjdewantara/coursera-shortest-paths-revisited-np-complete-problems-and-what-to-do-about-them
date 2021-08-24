@@ -17,21 +17,33 @@ func main() {
 		"_02c1945398be467219866ee1c3294d2d_2sat5.txt",
 		"_02c1945398be467219866ee1c3294d2d_2sat6.txt"}
 
+	//textfiles = []string{
+	//	"_02c1945398be467219866ee1c3294d2d_sample2sat2.txt",
+	//	"_02c1945398be467219866ee1c3294d2d_sample2sat3.txt"}
+
+	bitmaskString := ""
 	for psIndx, pst := range textfiles {
-		g := Graph.ReadTextfile(pst, true)
-		og := Graph.InitFromGraph(&g)
+		fmt.Println(fmt.Sprintf("Evaluating problem %d textfile %s", psIndx+1, pst))
+
+		gReversed := Graph.ReadTextfile(pst, true)
+		og := Graph.InitFromGraph(&gReversed)
 		og.DFSLoopFirst()
 
 		og.SortVertexByFinishingTime()
 
+		g := Graph.ReadTextfile(pst, false)
+		g.VertexLabels = gReversed.VertexLabels
+		og.Gr = g
+
 		og.DFSLoopSecond()
 
-		if len(og.SccLeaders) == g.NumVertices {
-			fmt.Println(fmt.Sprintf("Problem %s does not have a strongly-connected component", psIndx))
-		} else if len(og.SccLeaders) < g.NumVertices {
-			fmt.Println(fmt.Sprintf("Problem %s may have strongly-connected components", psIndx))
+		if og.HasEncounteredSccWithNegatedVariable {
+			bitmaskString += "0"
+		} else {
+			bitmaskString += "1"
 		}
-		//fmt.Println(len(g.Adj))
-		break
 	}
+
+	fmt.Println()
+	fmt.Println(bitmaskString)
 }

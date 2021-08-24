@@ -1,6 +1,10 @@
 package Graph
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
 
 type DFSTopologicalOrderGenerator struct {
 	SccLeaders           []int
@@ -9,6 +13,10 @@ type DFSTopologicalOrderGenerator struct {
 	Visited              []bool
 	FinishingTime        []int
 	CounterFinishingTime int
+
+	HasEncounteredSccWithNegatedVariable bool
+	SccMemberMap                         map[int]bool
+	SccTraversal                         strings.Builder
 }
 
 func (g *DFSTopologicalOrderGenerator) DFSLoopFirst() {
@@ -62,12 +70,23 @@ func (g *DFSTopologicalOrderGenerator) DFSFirstLabeler(rootVertex int) {
 
 func (g *DFSTopologicalOrderGenerator) DFSLoopSecond() {
 	g.Visited = make([]bool, g.Gr.NumVertices*2)
+	g.HasEncounteredSccWithNegatedVariable = false
 
 	for _, vertex := range g.Gr.VertexLabels {
 		vertexIndx := g.Gr.getIndexOfVertex(vertex)
 		if !g.Visited[vertexIndx] {
 			g.SccLeaders = append(g.SccLeaders, vertex)
+			g.SccMemberMap = make(map[int]bool)
+			g.SccMemberMap[vertex] = true
+			g.SccTraversal.Reset()
 			g.DFSSecondTraverseScc(vertex)
+
+			if g.HasEncounteredSccWithNegatedVariable {
+				fmt.Println(fmt.Sprintf("Encountered an Scc containing both variable and negated variable"))
+				fmt.Println(fmt.Sprintf("SccTraversal is as follows"))
+				fmt.Println(g.SccTraversal.String())
+				break
+			}
 		}
 	}
 }
@@ -80,6 +99,16 @@ func (g *DFSTopologicalOrderGenerator) DFSSecondTraverseScc(rootVertex int) {
 
 	g.Visited[rootVertexIndx] = true
 
+	_, memberMapExists := g.SccMemberMap[rootVertex]
+	if !memberMapExists {
+		g.SccMemberMap[rootVertex] = true
+	}
+
+	_, negatedMemberExists := g.SccMemberMap[-rootVertex]
+	if negatedMemberExists {
+		g.HasEncounteredSccWithNegatedVariable = true
+	}
+
 	if g.Gr.Adj[rootVertexIndx] == nil {
 		return
 	}
@@ -87,6 +116,7 @@ func (g *DFSTopologicalOrderGenerator) DFSSecondTraverseScc(rootVertex int) {
 	for _, vertex := range g.Gr.Adj[rootVertexIndx] {
 		vertexIndx := g.Gr.getIndexOfVertex(vertex)
 		if !g.Visited[vertexIndx] {
+			g.SccTraversal.WriteString(fmt.Sprintf("%d -> %d\n", rootVertex, vertex))
 			g.DFSSecondTraverseScc(vertex)
 		}
 	}
