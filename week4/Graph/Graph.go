@@ -7,8 +7,9 @@ import (
 )
 
 type Graph struct {
-	NumVertices int
-	Adj         [][]int
+	VertexLabels []int
+	NumVertices  int
+	Adj          [][]int
 }
 
 func (g *Graph) getIndexOfVertex(vertex int) int {
@@ -41,6 +42,7 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 
 		if lineIndx == 0 {
 			g.NumVertices, _ = strconv.Atoi(splitStr[0])
+			g.VertexLabels = make([]int, g.NumVertices*2)
 			g.Adj = make([][]int, g.NumVertices*2)
 			continue
 		}
@@ -54,12 +56,16 @@ func ReadTextfile(filepath string, isReversed bool) Graph {
 
 		vertexFromIdx := g.getIndexOfVertex(vertexFrom)
 
-		//if g.Adj[vertexFromIdx] == nil {
-		//	g.Adj[vertexFromIdx] = make([]int, 1)
-		//}
-
 		g.Adj[vertexFromIdx] = append(g.Adj[vertexFromIdx], vertexTo)
 	}
 
-	return g
+	for i := 0; i < g.NumVertices; i++ {
+		vertex := i + 1
+		g.VertexLabels[i] = vertex
+
+		vertex = -vertex
+		g.VertexLabels[g.NumVertices+i] = vertex
+	}
+
+return g
 }

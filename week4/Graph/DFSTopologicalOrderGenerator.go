@@ -19,9 +19,12 @@ func (g *DFSTopologicalOrderGenerator) DFSLoop() {
 			g.FinishingTime[vertexIndx] = g.CounterFinishingTime
 			g.CounterFinishingTime++
 		}
+	}
 
-		vertexName = -vertexName
-		vertexIndx = g.Gr.getIndexOfVertex(vertexName)
+	for vertex := g.Gr.NumVertices; vertex >= 1; vertex-- {
+		vertexName := -vertex
+
+		vertexIndx := g.Gr.getIndexOfVertex(vertexName)
 		if !g.Visited[vertexIndx] {
 			g.CurrentSourceVertex = vertexName
 			g.DFS(vertexName)
