@@ -15,5 +15,7 @@ func main() {
 
 	og.SortVertexByFinishingTime()
 
+	og.DFSLoopSecond()
+
 	fmt.Println(len(g.Adj))
 }

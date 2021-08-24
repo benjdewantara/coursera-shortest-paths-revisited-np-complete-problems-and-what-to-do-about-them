@@ -3,6 +3,7 @@ package Graph
 import "sort"
 
 type DFSTopologicalOrderGenerator struct {
+	SccLeaders           []int
 	Gr                   Graph
 	CurrentSourceVertex  int
 	Visited              []bool
@@ -55,6 +56,38 @@ func (g *DFSTopologicalOrderGenerator) DFSFirstLabeler(rootVertex int) {
 
 			g.FinishingTime[vertexIndx] = g.CounterFinishingTime
 			g.CounterFinishingTime++
+		}
+	}
+}
+
+func (g *DFSTopologicalOrderGenerator) DFSLoopSecond() {
+	g.Visited = make([]bool, g.Gr.NumVertices*2)
+
+	for _, vertex := range g.Gr.VertexLabels {
+		vertexIndx := g.Gr.getIndexOfVertex(vertex)
+		if !g.Visited[vertexIndx] {
+			g.SccLeaders = append(g.SccLeaders, vertex)
+			g.DFSSecondTraverseScc(vertex)
+		}
+	}
+}
+
+func (g *DFSTopologicalOrderGenerator) DFSSecondTraverseScc(rootVertex int) {
+	rootVertexIndx := g.Gr.getIndexOfVertex(rootVertex)
+	if g.Visited[rootVertexIndx] {
+		return
+	}
+
+	g.Visited[rootVertexIndx] = true
+
+	if g.Gr.Adj[rootVertexIndx] == nil {
+		return
+	}
+
+	for _, vertex := range g.Gr.Adj[rootVertexIndx] {
+		vertexIndx := g.Gr.getIndexOfVertex(vertex)
+		if !g.Visited[vertexIndx] {
+			g.DFSSecondTraverseScc(vertex)
 		}
 	}
 }
